@@ -1,11 +1,12 @@
-#include "intbits.h"
+#include "bitbuttons.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QPalette>
 #include <QGridLayout>
 #include <QMessageBox>
-Intbits::Intbits(QWidget *parent) : QWidget(parent)
+Bitbuttons::Bitbuttons(QWidget *parent, Bits * bits) : QWidget(parent)
 {
+    this->bits = bits;
     this->setFixedSize(800,100);
     QGridLayout *bits_layout = new QGridLayout;
     QGridLayout *mainLayout = new QGridLayout;
@@ -39,30 +40,25 @@ Intbits::Intbits(QWidget *parent) : QWidget(parent)
     }
     mainLayout->addLayout(bits_layout,0,0,1,1);
     setLayout(mainLayout);
-    this->set_value(0);
-
+    connect(bits,SIGNAL(value_changed()),this,SLOT(update_display()));
+    this->update_display();
 }
 
-int get_bit(quint64 int_num, int bit_num)
-{
-    quint64 a,tmp;
-    a= 1;
-    a = a << bit_num;
-    tmp = int_num & a;
-    return (tmp==a) ? 1 : 0;
-}
-
-void Intbits::update_display()
+void Bitbuttons::update_display()
 {
     int num_tmp;
-    for (int i=0; i<REG_BIT_NUM ; i++)
+    for (unsigned int i=0; i<REG_BIT_NUM ; i++)
     {
-        num_tmp = get_bit(this->int_num,i);
+        num_tmp = (int) bits->get_bit(i);
         this->btn_bits[i]->set_value(num_tmp);
+        if (bits->get_width() <= i)
+            this->btn_bits[i]->setDisabled(true);
+        else
+            this->btn_bits[i]->setDisabled(false);
     }
 }
 
-void Intbits::update_data()
+void Bitbuttons::click_bits_btn()
 {
     QString bits_str;
     bits_str = "";
@@ -71,22 +67,6 @@ void Intbits::update_data()
         bits_str = this->btn_bits[i]->text() + bits_str;
     }
     bool ok;
-    this->int_num = bits_str.toULongLong(&ok,2);
-    emit value_changed(int_num);
+    bits->set_data(bits_str.toULongLong(&ok,2));
 }
 
-void Intbits::click_bits_btn()
-{
-    this->update_data();
-}
-
-quint64 Intbits::get_value()
-{
-    return this->int_num;
-}
-
-void Intbits::set_value(quint64 input_num)
-{
-    this->int_num = input_num;
-    this->update_display();
-}

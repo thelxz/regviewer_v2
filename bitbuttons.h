@@ -3,29 +3,26 @@
 
 #include <QWidget>
 #include "bitbutton.h"
+#include "bits.h"
 
 #define REG_BIT_NUM 64
 class QPushButton;
 class BitButton;
 class QLabel;
 
-class Intbits : public QWidget
+class Bitbuttons : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Intbits(QWidget *parent = 0);
-    void set_value(quint64 input_num);
-    quint64 get_value();
-signals:
-    void value_changed(quint64 changed_num);
+    explicit Bitbuttons(QWidget *parent = 0, Bits * bits = NULL);
 
 private:
-    quint64 int_num;
+    Bits * bits;
     BitButton * btn_bits[REG_BIT_NUM];
     QLabel *label_bits[REG_BIT_NUM];
-    void update_display();
-    void update_data();
+
 public slots:
+    void update_display();
     void click_bits_btn();
 };
 

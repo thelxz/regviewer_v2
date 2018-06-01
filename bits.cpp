@@ -5,6 +5,8 @@
 #include <sstream>
 #include <iostream>
 #include <QDebug>
+#include <QRegExp>
+#include <QString>
 
 using std::string;
 using std::bitset;
@@ -12,6 +14,10 @@ using std::bitset;
 Bits::Bits(unsigned int width){
     this-> bit_data.reset();
     this-> set_width(width);
+}
+
+void Bits::send_value_changed_signal(){
+    emit value_changed();
 }
 
 void Bits::set_bit_mask(unsigned int width){
@@ -32,26 +38,31 @@ void Bits::set_bit_mask(unsigned int width){
         break;
     }
 }
+/**************** data change functions *********************/
 
 void Bits::set_width(unsigned int width){
     set_bit_mask(width);
     bit_data = bit_data & bit_mask;
     this->width = width;
+    send_value_changed_signal();
 }
 
 void Bits::set_bit(unsigned int bit_num){
     bit_data.set(bit_num);
     bit_data &= bit_mask;
+    send_value_changed_signal();
 }
 
 void Bits::clear_bit(unsigned int bit_num){
     bit_data.reset(bit_num);
     bit_data &= bit_mask;
+    send_value_changed_signal();
 }
 
 void Bits::reverse_bit(unsigned  int bit_num){
     bit_data.flip(bit_num);
     bit_data &= bit_mask;
+    send_value_changed_signal();
 }
 
 void Bits::set_bits(unsigned  int bit_start, unsigned  int bit_end){
@@ -60,6 +71,7 @@ void Bits::set_bits(unsigned  int bit_start, unsigned  int bit_end){
        bit_data.set(i);
     }
     bit_data &= bit_mask;
+    send_value_changed_signal();
 }
 
 void Bits::clear_bits(unsigned  int bit_start, unsigned  int bit_end){
@@ -68,6 +80,7 @@ void Bits::clear_bits(unsigned  int bit_start, unsigned  int bit_end){
        bit_data.reset(i);
     }
     bit_data &= bit_mask;
+    send_value_changed_signal();
 }
 
 void Bits::reverse_bits(unsigned  int bit_start, unsigned int bit_end){
@@ -76,20 +89,24 @@ void Bits::reverse_bits(unsigned  int bit_start, unsigned int bit_end){
        bit_data.flip(i);
     }
     bit_data &= bit_mask;
+    send_value_changed_signal();
 }
 
 void Bits::clear_all(){
     bit_data.reset();
     bit_data &= bit_mask;
+    send_value_changed_signal();
 }
 
 void Bits::set_all(){
     bit_data.set();
     bit_data &= bit_mask;
+    send_value_changed_signal();
 }
 void Bits::reverse_all(){
     bit_data.flip();
     bit_data &= bit_mask;
+    send_value_changed_signal();
 }
 
 /**********************   shift operate *******************/
@@ -102,19 +119,21 @@ void Bits::shift_arithmetic_right(unsigned  int bit_num){
         bit_data = (bit_data >> bit_num);
         this->set_bits(width-bit_num, width-1);
     }
-
+    send_value_changed_signal();
 }
 
 void Bits::shift_logic_right(unsigned  int bit_num){
     bit_num = bit_num % width;
     bit_data = (bit_data >> bit_num);
     bit_data &= bit_mask;
+    send_value_changed_signal();
 }
 
 void Bits::shift_logic_left(unsigned  int bit_num){
     bit_num = bit_num % width;
     bit_data = (bit_data << bit_num);
     bit_data &= bit_mask;
+    send_value_changed_signal();
 }
 
 void Bits::shift_rotate_right(unsigned int bit_num){
@@ -125,6 +144,7 @@ void Bits::shift_rotate_right(unsigned int bit_num){
         bit_data >> 1;
         bit_data[width-1] = temp;
     }
+    send_value_changed_signal();
 }
 
 /************* get format string ***********************/
@@ -158,11 +178,24 @@ string Bits::get_oct_string(){
 }
 
 string Bits::get_bin_string(){
+    //TODO: width handle, when width=8, not 000000000000000000000000001111
     return bit_data.to_string();
 }
 
 uint64_t Bits::get_data(){
     return bit_data.to_ullong();
+}
+
+bool Bits::get_bit(unsigned int bit_num){
+    return bit_data.test(bit_num);
+}
+
+unsigned int Bits::get_width(){
+    return this->width;
+}
+
+unsigned int Bits::get_bit_count(){
+    return bit_data.count();
 }
 
 
@@ -244,6 +277,8 @@ bool Bits::is_bin_format(string input_str){
 void Bits::set_data(uint64_t data){
     bit_data = data;
     bit_data &= bit_mask;
+    //when the value changed, send this signal out.
+    send_value_changed_signal();
 }
 
 bool Bits::set_hex_string(string input_str){
@@ -287,3 +322,116 @@ bool Bits::set_dec_signed_string(string input_str){
     return false;
 }
 
+string Bits::get_addr_string(){
+    uint    count[7] = {0};
+    QString unit[7] = {"B", "K", "M", "G", "T", "P", "E"};// "Z", "Y", "B"};
+    QString tmp_str;
+    for (int i=6;i>=0;i--){
+        count[i]= (bit_data.to_ullong() >> (i*10)) % 1024;
+        if (count[i] != 0){
+            tmp_str.append(QString::number(count[i])+unit[i]);
+        }
+    }
+    if (tmp_str == ""){
+        tmp_str = "0B";
+    }
+    return tmp_str.toStdString();
+}
+
+uint64_t addr_to_data(string input_str){
+    uint64_t tmp_num;
+    QString q_input_str = QString::fromStdString(input_str);
+    //QString pattern("^(\\d+E)*(\\d+P)*(\\d+T)*(\\d+G)*(\\d+M)*(\\d+K)*(\\d+B)*$");
+    //TODO: change to std::regex
+    QString pattern("^(?:(\\d+)E)?(?:(\\d+)P)?(?:(\\d+)T)?(?:(\\d+)G)?(?:(\\d+)M)?(?:(\\d+)K)?(?:(\\d+)B)?$");
+    QRegExp rx(pattern);
+    rx.exactMatch(q_input_str.toUpper());
+    tmp_num =   ( rx.cap(1).toULongLong() << 60 ) +
+                ( rx.cap(2).toULongLong() << 50 ) +
+                ( rx.cap(3).toULongLong() << 40 ) +
+                ( rx.cap(4).toULongLong() << 30 ) +
+                ( rx.cap(5).toULongLong() << 20 ) +
+                ( rx.cap(6).toULongLong() << 10 ) +
+                rx.cap(7).toULongLong();
+    return tmp_num;
+}
+
+bool Bits::is_addr_format(std::string input_str){
+    bool format_ok; uint64_t value, max_value;
+    max_value = this->bit_mask.to_ullong();
+    std::string pattern("^(?:(\\d+)E)?(?:(\\d+)P)?(?:(\\d+)T)?(?:(\\d+)G)?(?:(\\d+)M)?(?:(\\d+)K)?(?:(\\d+)B)?$");
+    std::regex re(pattern);
+    format_ok = std::regex_match(input_str, re);
+    if(format_ok){ //check is to big
+        value = addr_to_data(input_str);
+        if (value <= max_value)
+            return true;
+    }
+    return false;
+
+}
+
+bool Bits::set_addr_string(string input_str){
+    if (is_addr_format(input_str)){
+        this->set_data(addr_to_data(input_str));
+        return true;
+    }
+    return false;
+}
+
+string Bits::get_string(Bits::STR_TYPE type){
+    switch (type) {
+    case Bits::HEX:
+        return get_hex_string();
+        break;
+    case Bits::DEC:
+        return get_dec_unsigned_string();
+        break;
+    case Bits::OCT:
+        return get_oct_string();
+        break;
+    case Bits::BIN:
+        return get_bin_string();
+        break;
+    case Bits::DEC_S:
+        return get_dec_signed_string();
+        break;
+    case Bits::ADDR:
+        return get_addr_string();
+        break;
+    default:
+        return "";
+        break;
+    }
+}
+
+bool Bits::set_string(string input_str, Bits::STR_TYPE type){
+    switch (type) {
+    case Bits::HEX:
+        return set_hex_string(input_str);
+        break;
+    case Bits::DEC:
+        return set_dec_unsigned_string(input_str);
+        break;
+    case Bits::OCT:
+        return set_oct_string(input_str);
+        break;
+    case Bits::BIN:
+        return	set_bin_string(input_str);
+        break;
+    case Bits::DEC_S:
+        return	set_dec_signed_string(input_str);
+        break;
+    case Bits::ADDR:
+        return	set_addr_string(input_str);
+        break;
+    default:
+        return false;
+        break;
+    }
+}
+
+
+void Bits::broadcast_value_changed(){
+    send_value_changed_signal();
+}

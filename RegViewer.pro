@@ -25,7 +25,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        regviewer.cpp
+    bits.cpp \
+    bitbutton.cpp \
+    bitbuttons.cpp \
+    bitelement.cpp \
+    bitlineedit.cpp \
+    bitlineedits.cpp
 
 HEADERS += \
-        regviewer.h
+    bits.h \
+    bitbutton.h \
+    bitbuttons.h \
+    bitelement.h \
+    bitlineedit.h \
+    bitlineedits.h
