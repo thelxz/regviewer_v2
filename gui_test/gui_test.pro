@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2018-05-27T01:59:24
+# Project created by QtCreator 2018-06-02T23:24:19
 #
 #-------------------------------------------------
 
@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = RegViewer
+TARGET = gui_test
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -25,19 +25,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-    bits.cpp \
-    bitbutton.cpp \
-    bitbuttons.cpp \
-    bitelement.cpp \
-    bitlineedit.cpp \
-    bitlineedits.cpp \
-    bitoperate.cpp
+        mainwindow.cpp
 
 HEADERS += \
-    bits.h \
-    bitbutton.h \
-    bitbuttons.h \
-    bitelement.h \
-    bitlineedit.h \
-    bitlineedits.h \
-    bitoperate.h
+        mainwindow.h
+
+FORMS += \
+        mainwindow.ui

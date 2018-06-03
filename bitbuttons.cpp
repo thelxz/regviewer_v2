@@ -21,13 +21,10 @@ Bitbuttons::Bitbuttons(QWidget *parent, Bits * bits) : QWidget(parent)
         bit_count = REG_BIT_NUM - i -1;
         btn_bits[bit_count] = new BitButton();
         label_bits[bit_count] = new QLabel(QString::number(bit_count));
-        if (1 == (i/4)%2)
-        {
+        if (1 == (i/4)%2) {
             pa_color.setColor(QPalette::WindowText,Qt::red);
             label_bits[bit_count]->setPalette(pa_color);
-        }
-        else
-        {
+        } else {
             pa_color.setColor(QPalette::WindowText,Qt::blue);
             label_bits[bit_count]->setPalette(pa_color);
         }
@@ -47,14 +44,26 @@ Bitbuttons::Bitbuttons(QWidget *parent, Bits * bits) : QWidget(parent)
 void Bitbuttons::update_display()
 {
     int num_tmp;
+    QPalette pa_color;
     for (unsigned int i=0; i<REG_BIT_NUM ; i++)
     {
         num_tmp = (int) bits->get_bit(i);
         this->btn_bits[i]->set_value(num_tmp);
-        if (bits->get_width() <= i)
+        if (bits->get_width() <= i){				//is disable bits
+            pa_color.setColor(QPalette::WindowText,Qt::gray);
+            label_bits[i]->setPalette(pa_color);
             this->btn_bits[i]->setDisabled(true);
-        else
+        }											//is enable bits
+        else {
             this->btn_bits[i]->setDisabled(false);
+            if (1 == (i/4)%2) {
+                pa_color.setColor(QPalette::WindowText,Qt::red);
+                label_bits[i]->setPalette(pa_color);
+            } else {
+                pa_color.setColor(QPalette::WindowText,Qt::blue);
+                label_bits[i]->setPalette(pa_color);
+            }
+        }
     }
 }
 

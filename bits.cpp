@@ -178,8 +178,7 @@ string Bits::get_oct_string(){
 }
 
 string Bits::get_bin_string(){
-    //TODO: width handle, when width=8, not 000000000000000000000000001111
-    return bit_data.to_string();
+    return bit_data.to_string().substr(BIT_MAX_LENGTH-width);
 }
 
 uint64_t Bits::get_data(){
@@ -434,4 +433,45 @@ bool Bits::set_string(string input_str, Bits::STR_TYPE type){
 
 void Bits::broadcast_value_changed(){
     send_value_changed_signal();
+}
+
+void Bits::shift_left(unsigned int bit_num){
+    switch (shift_mode) {
+    case LOGIC:
+        shift_logic_left(bit_num);
+        break;
+    case ARITH:
+        // same as logic left shift
+        shift_logic_left(bit_num);
+        break;
+    case ROTATE:
+        //TODO
+        shift_rotate_right( abs(width - bit_num));
+        break;
+    default:
+        break;
+    }
+
+}
+void Bits::shift_right(unsigned int bit_num){
+    switch (shift_mode) {
+    case LOGIC:
+        shift_logic_right(bit_num);
+        break;
+    case ARITH:
+        shift_arithmetic_right(bit_num);
+        break;
+    case ROTATE:
+        //TODO
+        shift_rotate_right(bit_num);
+        break;
+    default:
+        break;
+    }
+
+
+}
+void Bits::set_shift_mode(SHF_TYPE shift_type){
+    this->shift_mode = shift_type;
+
 }

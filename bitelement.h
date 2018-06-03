@@ -3,8 +3,9 @@
 
 #include <QWidget>
 #include "bitbuttons.h"
-#include "bitlineedit.h"
 #include "bitlineedits.h"
+#include "bitoperate.h"
+
 #include "bits.h"
 
 class BitElement : public QWidget
@@ -14,9 +15,9 @@ public:
     explicit BitElement(QWidget *parent = nullptr);
 private:
     Bitbuttons * bitbtns;
-    BitLineEdit * line_edit;
     BitLineEdits * line_edits;
-    Bits * bits = new Bits(32);
+    BitOperate * bit_operate;
+    Bits * bits = new Bits(16);
 signals:
 
 public slots:

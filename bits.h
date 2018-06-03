@@ -23,6 +23,7 @@ private:
 
 public:
     enum STR_TYPE {HEX,DEC,OCT,BIN,DEC_S,ADDR};
+    enum SHF_TYPE {LOGIC,ARITH,ROTATE};
     /***************** data read functions ******************/
     Bits(unsigned int width);
     bool get_bit(unsigned int bit_num);
@@ -54,6 +55,10 @@ public:
     void shift_logic_right(unsigned  int bit_num);
     void shift_logic_left(unsigned  int bit_num);
     void shift_rotate_right(unsigned int bit_num);
+
+    void shift_left(unsigned int bit_num);
+    void shift_right(unsigned int bit_num);
+    void set_shift_mode(SHF_TYPE shift_type);
     /* if success return true, set the value.
        if failed, return false, not set the value. */
     void set_data(unsigned long long bit_data);
@@ -75,6 +80,7 @@ public:
 
     void broadcast_value_changed();
 private:
+    SHF_TYPE shift_mode = LOGIC;
     void send_value_changed_signal();
 signals:
     void value_changed();

@@ -6,6 +6,7 @@
 BitLineEdits::BitLineEdits(QWidget *parent, Bits * bits) : QWidget(parent)
 {
     this->bits = bits;
+    this->setFixedSize(300,130);
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->setSpacing(0);
     hex_line_edit = new BitLineEdit(this,bits,Bits::HEX);
