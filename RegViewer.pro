@@ -8,6 +8,8 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+CONFIG += c++11
+
 TARGET = RegViewer
 TEMPLATE = app
 
@@ -31,7 +33,8 @@ SOURCES += \
     bitelement.cpp \
     bitlineedit.cpp \
     bitlineedits.cpp \
-    bitoperate.cpp
+    bitoperate.cpp \
+    bitoptions.cpp
 
 HEADERS += \
     bits.h \
@@ -40,4 +43,5 @@ HEADERS += \
     bitelement.h \
     bitlineedit.h \
     bitlineedits.h \
-    bitoperate.h
+    bitoperate.h \
+    bitoptions.h

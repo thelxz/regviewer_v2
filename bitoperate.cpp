@@ -72,5 +72,5 @@ void BitOperate::shift_left(){
 }
 void BitOperate::shift_right(){
     int shift_bits = this->txt_shift_bit_num->text().toInt();
-    bits->shift_left(shift_bits);
+    bits->shift_right(shift_bits);
 }

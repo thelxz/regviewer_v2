@@ -446,7 +446,7 @@ void Bits::shift_left(unsigned int bit_num){
         break;
     case ROTATE:
         //TODO
-        shift_rotate_right( abs(width - bit_num));
+        shift_rotate_right( abs((signed int)(width - bit_num)));
         break;
     default:
         break;
@@ -462,16 +462,13 @@ void Bits::shift_right(unsigned int bit_num){
         shift_arithmetic_right(bit_num);
         break;
     case ROTATE:
-        //TODO
         shift_rotate_right(bit_num);
         break;
     default:
         break;
     }
-
-
 }
+
 void Bits::set_shift_mode(SHF_TYPE shift_type){
     this->shift_mode = shift_type;
-
 }

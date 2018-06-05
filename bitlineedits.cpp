@@ -16,12 +16,18 @@ BitLineEdits::BitLineEdits(QWidget *parent, Bits * bits) : QWidget(parent)
     bin_line_edit = new BitLineEdit(this,bits,Bits::BIN);
     addr_line_edit = new BitLineEdit(this,bits,Bits::ADDR);
 
-    hex_label = new QLabel(" Hex:");
+    hex_label = new QLabel("Hex:");
     dec_label = new QLabel("uDec:");
     dec_s_label = new QLabel("sDec:");
     oct_label = new QLabel("Oct:");
-    bin_label = new QLabel(" Bin:");
+    bin_label = new QLabel("Bin:");
     addr_label = new QLabel("Addr:");
+//    hex_label->setAlignment(Qt::AlignRight);
+//    dec_label->setAlignment(Qt::AlignRight);
+//    dec_s_label->setAlignment(Qt::AlignRight);
+//    oct_label->setAlignment(Qt::AlignRight);
+//    bin_label->setAlignment(Qt::AlignRight);
+//    addr_label->setAlignment(Qt::AlignRight);
     mainLayout->addWidget(this->hex_label,0,0,1,1);
     mainLayout->addWidget(this->dec_label,1,0,1,1);
     mainLayout->addWidget(this->dec_s_label,2,0,1,1);
