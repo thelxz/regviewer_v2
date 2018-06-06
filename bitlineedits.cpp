@@ -21,7 +21,7 @@ BitLineEdits::BitLineEdits(QWidget *parent, Bits * bits) : QWidget(parent)
     dec_s_label = new QLabel("sDec:");
     oct_label = new QLabel("Oct:");
     bin_label = new QLabel("Bin:");
-    addr_label = new QLabel("Addr:");
+    addr_label = new QLabel("Size:");
 //    hex_label->setAlignment(Qt::AlignRight);
 //    dec_label->setAlignment(Qt::AlignRight);
 //    dec_s_label->setAlignment(Qt::AlignRight);

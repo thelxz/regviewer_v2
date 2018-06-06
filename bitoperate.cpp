@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QWidget>
 #include <QRegExpValidator>
+#include <QComboBox>
 
 BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
 {
@@ -18,6 +19,12 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     btn_shift_left = new QPushButton("<<shift",this);
     txt_shift_bit_num = new QLineEdit("0",this);
     btn_shift_right = new QPushButton("shift>>",this);
+    shift_mode = new QComboBox(this);
+    shift_mode->setToolTip("Shift Mode");
+    shift_mode->addItem("Logic");
+    shift_mode->addItem("Arith");
+    shift_mode->addItem("Rotate");
+    shift_mode->setEditable(false);
 
     QRegExp rx_dec("[0-9]+");
     QValidator *dec_validator = new QRegExpValidator(rx_dec, this);
@@ -32,28 +39,27 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     shiftLayout->setMargin(1);
     shiftWidget->setLayout(shiftLayout);
     shiftWidget->setFixedWidth(200);
-//    设置背景黑色
-//    QPalette pal(shiftWidget->palette());
-//    pal.setColor(QPalette::Background, Qt::green);
-//    shiftWidget->setAutoFillBackground(true);
-//    shiftWidget->setPalette(pal);
 
     mainLayout->addWidget(btn_clear,			0,0,1,1);
     mainLayout->addWidget(btn_set,				0,1,1,1);
     mainLayout->addWidget(btn_reverse,			0,2,1,1);
     mainLayout->addWidget(shiftWidget,			0,3,1,1);
+    mainLayout->addWidget(shift_mode,			0,4,1,1);
     this->setLayout(mainLayout);
     txt_shift_bit_num->setText("1");
-    connect(btn_clear,SIGNAL(clicked(bool)),this,SLOT(clear_num()));
-    connect(btn_reverse,SIGNAL(clicked(bool)),this,SLOT(reverse_num()));
-    connect(btn_set,SIGNAL(clicked(bool)),this,SLOT(set_num()));
-    connect(btn_shift_left,SIGNAL(clicked(bool)),this,SLOT(shift_left()));
-    connect(btn_shift_right,SIGNAL(clicked(bool)),this,SLOT(shift_right()));
     btn_clear->setFocusPolicy(Qt::NoFocus);
     btn_reverse->setFocusPolicy(Qt::NoFocus);
     btn_set->setFocusPolicy(Qt::NoFocus);
     btn_shift_left->setFocusPolicy(Qt::NoFocus);
     btn_shift_right->setFocusPolicy(Qt::NoFocus);
+    shift_mode->setFocusPolicy(Qt::NoFocus);
+    connect(shift_mode,SIGNAL(currentTextChanged(QString)),this,SLOT(set_shift_mode(QString)));
+    connect(btn_clear,SIGNAL(clicked(bool)),this,SLOT(clear_num()));
+    connect(btn_reverse,SIGNAL(clicked(bool)),this,SLOT(reverse_num()));
+    connect(btn_set,SIGNAL(clicked(bool)),this,SLOT(set_num()));
+    connect(btn_shift_left,SIGNAL(clicked(bool)),this,SLOT(shift_left()));
+    connect(btn_shift_right,SIGNAL(clicked(bool)),this,SLOT(shift_right()));
+    connect(bits,SIGNAL(value_changed()),this,SLOT(update_display()));
 }
 
 void BitOperate::clear_num(){
@@ -70,7 +76,31 @@ void BitOperate::shift_left(){
     int shift_bits = this->txt_shift_bit_num->text().toInt();
     bits->shift_left(shift_bits);
 }
+
 void BitOperate::shift_right(){
     int shift_bits = this->txt_shift_bit_num->text().toInt();
     bits->shift_right(shift_bits);
+}
+
+void BitOperate::update_display(){
+    switch (bits->get_shift_mode()){
+        case Bits::SHF_LOGIC:
+            shift_mode->setCurrentText("Logic");
+            break;
+        case Bits::SHF_ARITH:
+            shift_mode->setCurrentText("Arith");
+            break;
+        case Bits::SHF_ROTATE:
+            shift_mode->setCurrentText("Rotate");
+            break;
+    }
+}
+
+void BitOperate::set_shift_mode(QString mode){
+    if (mode=="Logic")
+        bits->set_shift_mode(Bits::SHF_LOGIC);
+    else if (mode=="Arith")
+        bits->set_shift_mode(Bits::SHF_ARITH);
+    else if (mode=="Rotate")
+        bits->set_shift_mode(Bits::SHF_ROTATE);
 }

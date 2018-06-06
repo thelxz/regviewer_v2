@@ -26,7 +26,6 @@ private:
     QRadioButton * btn_32;
     QRadioButton * btn_64;
     QCheckBox * ckbox_always_on_top;
-    QPushButton * btn_more;
 
 public slots:
     void set_alway_on_top(int);

@@ -14,20 +14,17 @@ bitOptions::bitOptions(QWidget *parent, Bits * bits) : QWidget(parent)
     btn_16 = new QRadioButton("16");
     btn_32 = new QRadioButton("32");
     btn_64 = new QRadioButton("64");
-    btn_more = new QPushButton(">>");
     ckbox_always_on_top = new QCheckBox("Top");
     mainLayout->addWidget(btn_8,			0,0,1,1);
     mainLayout->addWidget(btn_16,	    	1,0,1,1);
     mainLayout->addWidget(btn_32,			2,0,1,1);
     mainLayout->addWidget(btn_64,			3,0,1,1);
     mainLayout->addWidget(ckbox_always_on_top,4,0,1,1);
-    mainLayout->addWidget(btn_more,5,0,1,1);
     this->setLayout(mainLayout);
     btn_8->setFocusPolicy(Qt::NoFocus);
     btn_16->setFocusPolicy(Qt::NoFocus);
     btn_32->setFocusPolicy(Qt::NoFocus);
     btn_64->setFocusPolicy(Qt::NoFocus);
-    btn_more->setFocusPolicy(Qt::NoFocus);
     ckbox_always_on_top->setFocusPolicy(Qt::NoFocus);
 
     update_display();
@@ -35,8 +32,8 @@ bitOptions::bitOptions(QWidget *parent, Bits * bits) : QWidget(parent)
     connect(btn_16,SIGNAL(toggled(bool)),this,SLOT(change_width()));
     connect(btn_32,SIGNAL(toggled(bool)),this,SLOT(change_width()));
     connect(btn_64,SIGNAL(toggled(bool)),this,SLOT(change_width()));
-    connect(bits,SIGNAL(value_changed()),this,SLOT(update_display()));
     connect(ckbox_always_on_top,SIGNAL(stateChanged(int)),this,SLOT(set_alway_on_top(int)));
+    connect(bits,SIGNAL(value_changed()),this,SLOT(update_display()));
 }
 
 void bitOptions::change_width(){

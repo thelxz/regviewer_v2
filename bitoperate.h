@@ -5,6 +5,7 @@
 class QPushButton;
 class QCheckBox;
 class QLineEdit;
+class QComboBox;
 #include "bits.h"
 
 class BitOperate : public QWidget
@@ -28,6 +29,10 @@ private:
     QPushButton * btn_shift_left;
     QLineEdit 	* txt_shift_bit_num;
     QPushButton * btn_shift_right;
+    QComboBox * shift_mode;
+private slots:
+    void update_display();
+    void set_shift_mode(QString mode);
 };
 
 #endif // BITOPERATE_H

@@ -141,7 +141,7 @@ void Bits::shift_rotate_right(unsigned int bit_num){
     int temp;
     for (;bit_num>0;bit_num--){
         temp = bit_data[0];
-        bit_data >> 1;
+        bit_data = bit_data >> 1;
         bit_data[width-1] = temp;
     }
     send_value_changed_signal();
@@ -256,7 +256,12 @@ bool Bits::is_oct_format(string input_str){
     std::regex re(pattern);
     format_ok = std::regex_match(input_str, re);
     if(format_ok){ //check is to big
-        value = std::stoull(input_str,nullptr,8);
+        try {
+            value = std::stoull(input_str,nullptr,8);
+        }
+        catch (std::out_of_range) {
+            return false;
+        }
         if (value <= max_value)
             return true;
     }
@@ -437,14 +442,14 @@ void Bits::broadcast_value_changed(){
 
 void Bits::shift_left(unsigned int bit_num){
     switch (shift_mode) {
-    case LOGIC:
+    case SHF_LOGIC:
         shift_logic_left(bit_num);
         break;
-    case ARITH:
+    case SHF_ARITH:
         // same as logic left shift
         shift_logic_left(bit_num);
         break;
-    case ROTATE:
+    case SHF_ROTATE:
         //TODO
         shift_rotate_right( abs((signed int)(width - bit_num)));
         break;
@@ -455,13 +460,13 @@ void Bits::shift_left(unsigned int bit_num){
 }
 void Bits::shift_right(unsigned int bit_num){
     switch (shift_mode) {
-    case LOGIC:
+    case SHF_LOGIC:
         shift_logic_right(bit_num);
         break;
-    case ARITH:
+    case SHF_ARITH:
         shift_arithmetic_right(bit_num);
         break;
-    case ROTATE:
+    case SHF_ROTATE:
         shift_rotate_right(bit_num);
         break;
     default:
@@ -471,4 +476,7 @@ void Bits::shift_right(unsigned int bit_num){
 
 void Bits::set_shift_mode(SHF_TYPE shift_type){
     this->shift_mode = shift_type;
+}
+Bits::SHF_TYPE Bits::get_shift_mode(){
+    return this->shift_mode;
 }
